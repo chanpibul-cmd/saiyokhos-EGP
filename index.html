@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>ระบบจัดซื้อจัดจ้าง</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; }
+    .navbar { box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+    .card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,.05); }
+    .hidden { display: none !important; }
+    .nav-pills .nav-link.active { background-color: #198754; color: white !important;}
+    .nav-pills .nav-link { color: #198754; font-weight: 500; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+    <div class="container-fluid d-flex justify-content-between">
+      <a class="navbar-brand fw-bold" href="#">ระบบจัดซื้อจัดจ้าง</a>
+      <div class="d-flex" id="nav-actions">
+        <button class="btn btn-outline-light btn-sm me-2" id="btnShowLoginModal">เข้าสู่ระบบ</button>
+        <span class="text-light align-self-center me-3 hidden" id="userInfo"></span>
+        <button class="btn btn-warning btn-sm hidden" id="btnLogout">ออกจากระบบ</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid mt-4 px-4">
+    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+      <li class="nav-item"><a class="nav-link active" id="tab-data1-link" data-bs-toggle="pill" data-bs-target="#tab-data1">ประกาศเฉพาะเจาะจง</a></li>
+      <li class="nav-item"><a class="nav-link" id="tab-data2-link" data-bs-toggle="pill" data-bs-target="#tab-data2">ประกาศ E-bidding</a></li>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+      <div class="tab-pane fade show active" id="tab-data1" role="tabpanel">
+        <div class="card p-4">
+          <div class="d-flex justify-content-between mb-3">
+            <h5 class="text-success fw-bold">ข้อมูลประกวดราคาแบบเฉพาะเจาะจง</h5>
+            <button class="btn btn-primary hidden auth-action" id="btnAddData1"><i class="fas fa-plus"></i> เพิ่มข้อมูล</button>
+          </div>
+          <div class="table-responsive">
+            <table id="table1" class="table table-hover w-100 align-middle">
+              <thead class="table-light"><tr><th>ลำดับ</th><th>วันที่ประกาศ</th><th>เรื่อง</th><th>เอกสารแนบ</th><th>ผู้ประกาศ</th><th>จัดการ</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade" id="tab-data2" role="tabpanel">
+        <div class="card p-4">
+          <div class="d-flex justify-content-between mb-3">
+            <h5 class="text-success fw-bold">ข้อมูลประกวดราคา (E-bidding)</h5>
+            <button class="btn btn-primary hidden auth-action" id="btnAddData2"><i class="fas fa-plus"></i> เพิ่มข้อมูล</button>
+          </div>
+          <div class="table-responsive">
+            <table id="table2" class="table table-hover w-100 align-middle">
+              <thead class="table-light"><tr><th>วันที่ประกาศ</th><th>เรื่อง</th><th>ร่างประกาศฯ</th><th>ร่างเอกสารฯ</th><th>คุณสมบัติ</th><th>ราคากลาง</th><th>เอกสารอื่น</th><th>ผู้ประกาศ</th><th>จัดการ</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white"><h5 class="modal-title">เข้าสู่ระบบ</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <input type="text" id="username" class="form-control mb-3" placeholder="Username">
+          <input type="password" id="password" class="form-control mb-3" placeholder="Password">
+          <button class="btn btn-success w-100" id="btnSubmitLogin">ล็อกอิน</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalData1" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">เพิ่มประกาศเฉพาะเจาะจง</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="form1">
+            <div class="mb-3"><label>วันที่</label><input type="date" id="d1_date" class="form-control" required></div>
+            <div class="mb-3"><label>เรื่อง</label><input type="text" id="d1_title" class="form-control" required></div>
+            <div class="mb-3"><label>เอกสาร</label><input type="file" id="d1_file" class="form-control" required></div>
+            <button type="button" class="btn btn-primary w-100" id="btnSubmitData1">บันทึกข้อมูล</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalData2" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white"><h5 class="modal-title">เพิ่มประกาศ E-bidding</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <form id="form2">
+            <div class="row">
+              <div class="col-md-4 mb-3"><label>วันที่</label><input type="date" id="d2_date" class="form-control" required></div>
+              <div class="col-md-8 mb-3"><label>เรื่อง</label><input type="text" id="d2_title" class="form-control" required></div>
+            </div>
+            <div class="mb-3"><label>1. ร่างประกาศเชิญชวน</label><input type="file" id="d2_f1" class="form-control"></div>
+            <div class="mb-3"><label>2. ร่างเอกสารประกวดราคาซื้อ</label><input type="file" id="d2_f2" class="form-control"></div>
+            <div class="mb-3"><label>3. รายละเอียดคุณสมบัติเฉพาะ</label><input type="file" id="d2_f3" class="form-control"></div>
+            <div class="mb-3"><label>4. ราคากลาง</label><input type="file" id="d2_f4" class="form-control"></div>
+            <div class="mb-3"><label>5. เอกสารอื่น</label><input type="file" id="d2_f5" class="form-control"></div>
+            <button type="button" class="btn btn-primary w-100 mt-2" id="btnSubmitData2">บันทึกข้อมูล</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // ==========================================
+    // ใส่ URL Web App ที่ได้จาก Google Apps Script ที่นี่
+    // ==========================================
+    const API_URL = "วาง_URL_WEB_APP_ที่นี่"; 
+
+    let currentUser = null;
+    let currentTab = 'data1';
+    let dt1 = null, dt2 = null;
+
+    $(document).ready(function() { 
+      $('#tab-data1-link').on('click', () => loadData('data1'));
+      $('#tab-data2-link').on('click', () => loadData('data2'));
+      $('#btnShowLoginModal').on('click', () => $('#loginModal').modal('show'));
+      $('#btnLogout').on('click', () => { currentUser = null; updateUI(); });
+      $('#btnSubmitLogin').on('click', processLogin);
+      $('#btnAddData1').on('click', () => { $('#form1')[0].reset(); $('#modalData1').modal('show'); });
+      $('#btnAddData2').on('click', () => { $('#form2')[0].reset(); $('#modalData2').modal('show'); });
+      $('#btnSubmitData1').on('click', submitData1);
+      $('#btnSubmitData2').on('click', submitData2);
+      loadData('data1'); 
+    });
+
+    async function callAPI(payload) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+        return await response.json();
+      } catch (error) {
+        return { status: 'error', message: 'API Connection Failed: ' + error.message };
+      }
+    }
+
+    async function processLogin() {
+      let u = $('#username').val(), p = $('#password').val();
+      if(!u || !p) return Swal.fire('เตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
+      Swal.showLoading();
+      let res = await callAPI({ action: 'login', username: u, password: p });
+      if (res.status === 'success') {
+        currentUser = res; updateUI(); $('#loginModal').modal('hide'); Swal.fire('สำเร็จ', 'เข้าสู่ระบบแล้ว', 'success');
+      } else { Swal.fire('ข้อผิดพลาด', res.message, 'error'); }
+    }
+
+    async function loadData(sheetName) {
+      currentTab = sheetName;
+      Swal.showLoading();
+      let res = await callAPI({ action: 'getData', sheetName: sheetName });
+      if (res.status === 'error') { Swal.fire('Error', res.message, 'error'); return; }
+      if (sheetName === 'data1') renderTable1(res.data);
+      if (sheetName === 'data2') renderTable2(res.data);
+      Swal.close();
+    }
+
+    async function deleteRecord(rowIndex) {
+      Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'ลบ' }).then(async (result) => {
+        if (result.isConfirmed) {
+          Swal.showLoading();
+          let res = await callAPI({ action: 'delete', sheetName: currentTab, rowIndex: rowIndex });
+          if(res.status === 'success') { loadData(currentTab); } else { Swal.fire('Error', res.message, 'error'); }
+        }
+      });
+    }
+    window.callDelete = function(idx) { deleteRecord(idx); }
+
+    async function submitData1() {
+      if(!$('#d1_date').val() || !$('#d1_title').val() || !$('#d1_file')[0].files[0]) return Swal.fire('เตือน', 'กรอกข้อมูลให้ครบ', 'warning');
+      Swal.fire({ title: 'กำลังอัปโหลด...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+      let file = $('#d1_file')[0].files[0];
+      let base64 = await getBase64(file);
+      let payload = { date: $('#d1_date').val(), title: $('#d1_title').val(), file1: base64, file1Name: file.name, uploader: currentUser.name };
+      let res = await callAPI({ action: 'saveData1', payload: payload });
+      if(res.status === 'success') { $('#modalData1').modal('hide'); loadData('data1'); Swal.fire('สำเร็จ', 'บันทึกแล้ว', 'success'); }
+      else { Swal.fire('Error', res.message, 'error'); }
+    }
+
+    async function submitData2() {
+      if(!$('#d2_date').val() || !$('#d2_title').val()) return Swal.fire('เตือน', 'กรอกวันที่และเรื่อง', 'warning');
+      Swal.fire({ title: 'กำลังอัปโหลด...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+      let getF = async (id) => { let f = $(id)[0].files[0]; return f ? { base64: await getBase64(f), name: f.name } : { base64: null, name: null }; };
+      let payload = {
+        date: $('#d2_date').val(), title: $('#d2_title').val(),
+        fileC: (await getF('#d2_f1')).base64, fileCName: (await getF('#d2_f1')).name,
+        fileD: (await getF('#d2_f2')).base64, fileDName: (await getF('#d2_f2')).name,
+        fileE: (await getF('#d2_f3')).base64, fileEName: (await getF('#d2_f3')).name,
+        fileF: (await getF('#d2_f4')).base64, fileFName: (await getF('#d2_f4')).name,
+        fileG: (await getF('#d2_f5')).base64, fileGName: (await getF('#d2_f5')).name,
+        uploader: currentUser.name
+      };
+      let res = await callAPI({ action: 'saveData2', payload: payload });
+      if(res.status === 'success') { $('#modalData2').modal('hide'); loadData('data2'); Swal.fire('สำเร็จ', 'บันทึกแล้ว', 'success'); }
+      else { Swal.fire('Error', res.message, 'error'); }
+    }
+
+    function updateUI() {
+      if (currentUser) {
+        $('#btnShowLoginModal').addClass('hidden');
+        $('#btnLogout, .auth-action').removeClass('hidden');
+        $('#userInfo').removeClass('hidden').text(`${currentUser.name} (${currentUser.role})`);
+      } else {
+        $('#btnShowLoginModal').removeClass('hidden');
+        $('#btnLogout, .auth-action, #userInfo').addClass('hidden');
+      }
+      loadData(currentTab);
+    }
+
+    function genLink(url) { return (!url || url.trim() === '') ? '-' : `<a href="${url}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fas fa-download"></i></a>`; }
+    function getBase64(file) { return new Promise((resolve, reject) => { if(!file) return resolve(null); const r = new FileReader(); r.readAsDataURL(file); r.onload = () => resolve(r.result); r.onerror = e => reject(e); }); }
+
+    function renderTable1(data) {
+      if (dt1) dt1.destroy(); $('#table1 tbody').empty();
+      if(data && data.length > 0) {
+        data.forEach((row, index) => {
+          let btnHtml = '-'; let uploader = row[4] || '';
+          if (currentUser && (currentUser.role === 'Admin' || currentUser.name === uploader)) btnHtml = `<button class="btn btn-danger btn-sm" onclick="callDelete('${index + 1}')"><i class="fas fa-trash"></i></button>`;
+          $('#table1 tbody').append(`<tr><td>${row[0]||''}</td><td>${row[1]||''}</td><td>${row[2]||''}</td><td>${genLink(row[3])}</td><td>${uploader}</td><td>${btnHtml}</td></tr>`);
+        });
+      }
+      dt1 = $('#table1').DataTable({ language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, order: [[0, 'desc']] });
+    }
+
+    function renderTable2(data) {
+      if (dt2) dt2.destroy(); $('#table2 tbody').empty();
+      if(data && data.length > 0) {
+        data.forEach((row, index) => {
+          let btnHtml = '-'; let uploader = row[7] || '';
+          if (currentUser && (currentUser.role === 'Admin' || currentUser.name === uploader)) btnHtml = `<button class="btn btn-danger btn-sm" onclick="callDelete('${index + 1}')"><i class="fas fa-trash"></i></button>`;
+          $('#table2 tbody').append(`<tr><td>${row[0]||''}</td><td>${row[1]||''}</td><td>${genLink(row[2])}</td><td>${genLink(row[3])}</td><td>${genLink(row[4])}</td><td>${genLink(row[5])}</td><td>${genLink(row[6])}</td><td>${uploader}</td><td>${btnHtml}</td></tr>`);
+        });
+      }
+      dt2 = $('#table2').DataTable({ language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, order: [[0, 'desc']] });
+    }
+  </script>
+</body>
+</html>
