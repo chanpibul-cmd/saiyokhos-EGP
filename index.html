@@ -2,64 +2,154 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>ระบบจัดซื้อจัดจ้าง</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบจัดซื้อจัดจ้าง - โรงพยาบาลไทรโยค</title>
+  
+  <!-- Fonts & CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  
   <style>
-    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; }
-    .navbar { box-shadow: 0 2px 4px rgba(0,0,0,.1); }
-    .card { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,.05); }
+    body { 
+      font-family: 'Prompt', sans-serif; 
+      background-color: #f4f7f6; 
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .navbar { box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+    .card { 
+      border: none; 
+      border-radius: 12px; 
+      box-shadow: 0 4px 15px rgba(0,0,0,.05); 
+      transition: all 0.3s ease;
+    }
     .hidden { display: none !important; }
-    .nav-pills .nav-link.active { background-color: #198754; color: white !important;}
-    .nav-pills .nav-link { color: #198754; font-weight: 500; cursor: pointer; }
+    
+    /* Custom Tabs */
+    .nav-pills .nav-link { 
+      color: #198754; 
+      font-weight: 500; 
+      cursor: pointer; 
+      border-radius: 50px;
+      padding: 10px 25px;
+      margin-right: 10px;
+      transition: all 0.3s;
+    }
+    .nav-pills .nav-link:hover { background-color: #e8f5e9; }
+    .nav-pills .nav-link.active { 
+      background-color: #198754; 
+      color: white !important;
+      box-shadow: 0 4px 10px rgba(25, 135, 84, 0.3);
+    }
+
+    /* Custom Table Header */
+    .table-custom-header th {
+      background-color: #198754 !important;
+      color: white !important;
+      text-align: center;
+    }
+    
+    /* Footer */
+    footer {
+      margin-top: auto;
+      background-color: #2c3e50;
+      color: #ecf0f1;
+      padding: 15px 0;
+    }
   </style>
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-    <div class="container-fluid d-flex justify-content-between">
-      <a class="navbar-brand fw-bold" href="#">ระบบจัดซื้อจัดจ้าง</a>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success py-3">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="fas fa-file-contract me-2"></i> ระบบประกาศจัดซื้อจัดจ้าง
+      </a>
       <div class="d-flex" id="nav-actions">
-        <button class="btn btn-outline-light btn-sm me-2" id="btnShowLoginModal">เข้าสู่ระบบ</button>
-        <span class="text-light align-self-center me-3 hidden" id="userInfo"></span>
-        <button class="btn btn-warning btn-sm hidden" id="btnLogout">ออกจากระบบ</button>
+        <button class="btn btn-light btn-sm me-2 fw-bold text-success" id="btnShowLoginModal">
+          <i class="fas fa-sign-in-alt me-1"></i> เข้าสู่ระบบ
+        </button>
+        <span class="text-light align-self-center me-3 hidden fw-bold" id="userInfo"></span>
+        <button class="btn btn-warning btn-sm hidden fw-bold" id="btnLogout">
+          <i class="fas fa-sign-out-alt me-1"></i> ออกจากระบบ
+        </button>
       </div>
     </div>
   </nav>
 
-  <div class="container-fluid mt-4 px-4">
-    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-      <li class="nav-item"><a class="nav-link active" id="tab-data1-link" data-bs-toggle="pill" data-bs-target="#tab-data1">ประกาศเฉพาะเจาะจง</a></li>
-      <li class="nav-item"><a class="nav-link" id="tab-data2-link" data-bs-toggle="pill" data-bs-target="#tab-data2">ประกาศ E-bidding</a></li>
+  <!-- Main Content -->
+  <div class="container-fluid mt-4 px-4 flex-grow-1 mb-5">
+    
+    <!-- Tabs -->
+    <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="tab-data1-link" data-bs-toggle="pill" data-bs-target="#tab-data1">
+          <i class="fas fa-file-alt me-1"></i> ประกาศเฉพาะเจาะจง
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="tab-data2-link" data-bs-toggle="pill" data-bs-target="#tab-data2">
+          <i class="fas fa-gavel me-1"></i> ประกาศ E-bidding
+        </a>
+      </li>
     </ul>
 
     <div class="tab-content" id="pills-tabContent">
+      <!-- Tab 1: ประกาศเฉพาะเจาะจง -->
       <div class="tab-pane fade show active" id="tab-data1" role="tabpanel">
         <div class="card p-4">
-          <div class="d-flex justify-content-between mb-3">
-            <h5 class="text-success fw-bold">ข้อมูลประกวดราคาแบบเฉพาะเจาะจง</h5>
-            <button class="btn btn-primary hidden auth-action" id="btnAddData1"><i class="fas fa-plus"></i> เพิ่มข้อมูล</button>
+          <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <h4 class="text-success fw-bold m-0"><i class="fas fa-list text-success me-2"></i> ข้อมูลประกวดราคาแบบเฉพาะเจาะจง</h4>
+            <button class="btn btn-primary hidden auth-action" id="btnAddData1">
+              <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลใหม่
+            </button>
           </div>
           <div class="table-responsive">
-            <table id="table1" class="table table-hover w-100 align-middle">
-              <thead class="table-light"><tr><th>ลำดับ</th><th>วันที่ประกาศ</th><th>เรื่อง</th><th>เอกสารแนบ</th><th>ผู้ประกาศ</th><th>จัดการ</th></tr></thead>
+            <table id="table1" class="table table-hover table-bordered w-100 align-middle text-center">
+              <thead class="table-custom-header">
+                <tr>
+                  <th width="8%">ลำดับ</th>
+                  <th width="12%">วันที่ประกาศ</th>
+                  <th width="40%" class="text-start">เรื่อง</th>
+                  <th width="15%">เอกสารแนบ</th>
+                  <th width="15%">ผู้ประกาศ</th>
+                  <th width="10%">จัดการ</th>
+                </tr>
+              </thead>
               <tbody></tbody>
             </table>
           </div>
         </div>
       </div>
 
+      <!-- Tab 2: E-bidding -->
       <div class="tab-pane fade" id="tab-data2" role="tabpanel">
         <div class="card p-4">
-          <div class="d-flex justify-content-between mb-3">
-            <h5 class="text-success fw-bold">ข้อมูลประกวดราคา (E-bidding)</h5>
-            <button class="btn btn-primary hidden auth-action" id="btnAddData2"><i class="fas fa-plus"></i> เพิ่มข้อมูล</button>
+          <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <h4 class="text-success fw-bold m-0"><i class="fas fa-list text-success me-2"></i> ข้อมูลประกวดราคา (E-bidding)</h4>
+            <button class="btn btn-primary hidden auth-action" id="btnAddData2">
+              <i class="fas fa-plus-circle me-1"></i> เพิ่มข้อมูลใหม่
+            </button>
           </div>
           <div class="table-responsive">
-            <table id="table2" class="table table-hover w-100 align-middle">
-              <thead class="table-light"><tr><th>วันที่ประกาศ</th><th>เรื่อง</th><th>ร่างประกาศฯ</th><th>ร่างเอกสารฯ</th><th>คุณสมบัติ</th><th>ราคากลาง</th><th>เอกสารอื่น</th><th>ผู้ประกาศ</th><th>จัดการ</th></tr></thead>
+            <table id="table2" class="table table-hover table-bordered w-100 align-middle text-center">
+              <thead class="table-custom-header">
+                <tr>
+                  <th width="10%">วันที่ประกาศ</th>
+                  <th width="30%" class="text-start">เรื่อง</th>
+                  <th>ร่างประกาศฯ</th>
+                  <th>ร่างเอกสารฯ</th>
+                  <th>คุณสมบัติ</th>
+                  <th>ราคากลาง</th>
+                  <th>เอกสารอื่น</th>
+                  <th>ผู้ประกาศ</th>
+                  <th width="8%">จัดการ</th>
+                </tr>
+              </thead>
               <tbody></tbody>
             </table>
           </div>
@@ -68,57 +158,120 @@
     </div>
   </div>
 
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container">
+      <small>© 2023-2024 ระบบประกาศจัดซื้อจัดจ้าง. สงวนลิขสิทธิ์.</small>
+    </div>
+  </footer>
+
+  <!-- Modal Login -->
   <div class="modal fade" id="loginModal" tabindex="-1">
     <div class="modal-dialog modal-sm modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-success text-white"><h5 class="modal-title">เข้าสู่ระบบ</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body">
-          <input type="text" id="username" class="form-control mb-3" placeholder="Username">
-          <input type="password" id="password" class="form-control mb-3" placeholder="Password">
-          <button class="btn btn-success w-100" id="btnSubmitLogin">ล็อกอิน</button>
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-success text-white border-0">
+          <h5 class="modal-title"><i class="fas fa-user-lock me-2"></i>เข้าสู่ระบบ</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div class="input-group mb-3">
+            <span class="input-group-text"><i class="fas fa-user"></i></span>
+            <input type="text" id="username" class="form-control" placeholder="Username">
+          </div>
+          <div class="input-group mb-4">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" id="password" class="form-control" placeholder="Password">
+          </div>
+          <button class="btn btn-success w-100 fw-bold" id="btnSubmitLogin">เข้าสู่ระบบ</button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Modal Data 1 -->
   <div class="modal fade" id="modalData1" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white"><h5 class="modal-title">เพิ่มประกาศเฉพาะเจาะจง</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-primary text-white border-0">
+          <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>เพิ่มประกาศเฉพาะเจาะจง</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
           <form id="form1">
-            <div class="mb-3"><label>วันที่</label><input type="date" id="d1_date" class="form-control" required></div>
-            <div class="mb-3"><label>เรื่อง</label><input type="text" id="d1_title" class="form-control" required></div>
-            <div class="mb-3"><label>เอกสาร</label><input type="file" id="d1_file" class="form-control" required></div>
-            <button type="button" class="btn btn-primary w-100" id="btnSubmitData1">บันทึกข้อมูล</button>
+            <div class="mb-3">
+              <label class="form-label fw-bold">วันที่</label>
+              <input type="date" id="d1_date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">เรื่อง</label>
+              <input type="text" id="d1_title" class="form-control" placeholder="ระบุเรื่องที่ประกาศ..." required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">เอกสารแนบ <span class="text-danger" style="font-size: 12px;">(ไม่เกิน 5MB)</span></label>
+              <input type="file" id="d1_file" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-primary w-100 fw-bold mt-2" id="btnSubmitData1">
+              <i class="fas fa-save me-1"></i> บันทึกข้อมูล
+            </button>
           </form>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Modal Data 2 -->
   <div class="modal fade" id="modalData2" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header bg-primary text-white"><h5 class="modal-title">เพิ่มประกาศ E-bidding</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-        <div class="modal-body">
+      <div class="modal-content border-0 shadow">
+        <div class="modal-header bg-primary text-white border-0">
+          <h5 class="modal-title"><i class="fas fa-plus-circle me-2"></i>เพิ่มประกาศ E-bidding</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
           <form id="form2">
             <div class="row">
-              <div class="col-md-4 mb-3"><label>วันที่</label><input type="date" id="d2_date" class="form-control" required></div>
-              <div class="col-md-8 mb-3"><label>เรื่อง</label><input type="text" id="d2_title" class="form-control" required></div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-bold">วันที่</label>
+                <input type="date" id="d2_date" class="form-control" required>
+              </div>
+              <div class="col-md-8 mb-3">
+                <label class="form-label fw-bold">เรื่อง</label>
+                <input type="text" id="d2_title" class="form-control" placeholder="ระบุเรื่องที่ประกาศ..." required>
+              </div>
             </div>
-            <div class="mb-3"><label>1. ร่างประกาศเชิญชวน</label><input type="file" id="d2_f1" class="form-control"></div>
-            <div class="mb-3"><label>2. ร่างเอกสารประกวดราคาซื้อ</label><input type="file" id="d2_f2" class="form-control"></div>
-            <div class="mb-3"><label>3. รายละเอียดคุณสมบัติเฉพาะ</label><input type="file" id="d2_f3" class="form-control"></div>
-            <div class="mb-3"><label>4. ราคากลาง</label><input type="file" id="d2_f4" class="form-control"></div>
-            <div class="mb-3"><label>5. เอกสารอื่น</label><input type="file" id="d2_f5" class="form-control"></div>
-            <button type="button" class="btn btn-primary w-100 mt-2" id="btnSubmitData2">บันทึกข้อมูล</button>
+            <div class="alert alert-info py-2" style="font-size: 14px;">
+              <i class="fas fa-info-circle me-1"></i> ขนาดไฟล์แต่ละไฟล์ไม่ควรเกิน 5MB เพื่อป้องกันการอัปโหลดล้มเหลว
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">1. ร่างประกาศเชิญชวน</label>
+              <input type="file" id="d2_f1" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">2. ร่างเอกสารประกวดราคาซื้อ</label>
+              <input type="file" id="d2_f2" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">3. รายละเอียดคุณสมบัติเฉพาะ</label>
+              <input type="file" id="d2_f3" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">4. ราคากลาง</label>
+              <input type="file" id="d2_f4" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">5. เอกสารอื่น</label>
+              <input type="file" id="d2_f5" class="form-control">
+            </div>
+            <button type="button" class="btn btn-primary w-100 fw-bold mt-3" id="btnSubmitData2">
+              <i class="fas fa-save me-1"></i> บันทึกข้อมูล
+            </button>
           </form>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
@@ -130,24 +283,44 @@
     // ใส่ URL Web App ที่ได้จาก Google Apps Script ที่นี่
     // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycbyHQFChLOesMmq3Bv2mAbzEKPzJijVlEjvN31FbTRsmfEnZgQDLMew55wS7ls4ByWy4/exec"; 
+    
+    // ตั้งค่าขนาดไฟล์สูงสุดที่อัปโหลดได้ (5MB = 5 * 1024 * 1024 bytes)
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; 
 
     let currentUser = null;
     let currentTab = 'data1';
     let dt1 = null, dt2 = null;
 
     $(document).ready(function() { 
+      // จัดการ Events ต่างๆ
       $('#tab-data1-link').on('click', () => loadData('data1'));
       $('#tab-data2-link').on('click', () => loadData('data2'));
+      
       $('#btnShowLoginModal').on('click', () => $('#loginModal').modal('show'));
-      $('#btnLogout').on('click', () => { currentUser = null; updateUI(); });
+      $('#btnLogout').on('click', () => { 
+        currentUser = null; 
+        updateUI(); 
+        Swal.fire({ icon: 'success', title: 'ออกจากระบบแล้ว', showConfirmButton: false, timer: 1500 });
+      });
       $('#btnSubmitLogin').on('click', processLogin);
-      $('#btnAddData1').on('click', () => { $('#form1')[0].reset(); $('#modalData1').modal('show'); });
-      $('#btnAddData2').on('click', () => { $('#form2')[0].reset(); $('#modalData2').modal('show'); });
+      
+      $('#btnAddData1').on('click', () => { 
+        $('#form1')[0].reset(); 
+        $('#modalData1').modal('show'); 
+      });
+      $('#btnAddData2').on('click', () => { 
+        $('#form2')[0].reset(); 
+        $('#modalData2').modal('show'); 
+      });
+      
       $('#btnSubmitData1').on('click', submitData1);
       $('#btnSubmitData2').on('click', submitData2);
+      
+      // โหลดข้อมูล Tab แรกเมื่อเปิดหน้าเว็บ
       loadData('data1'); 
     });
 
+    // ฟังก์ชันเชื่อมต่อกับ Google Apps Script API
     async function callAPI(payload) {
       try {
         const response = await fetch(API_URL, {
@@ -161,54 +334,143 @@
       }
     }
 
+    // ฟังก์ชันเข้าสู่ระบบ
     async function processLogin() {
-      let u = $('#username').val(), p = $('#password').val();
-      if(!u || !p) return Swal.fire('เตือน', 'กรุณากรอกข้อมูลให้ครบ', 'warning');
+      let u = $('#username').val();
+      let p = $('#password').val();
+      
+      if(!u || !p) {
+        return Swal.fire('แจ้งเตือน', 'กรุณากรอก Username และ Password ให้ครบถ้วน', 'warning');
+      }
+      
       Swal.showLoading();
       let res = await callAPI({ action: 'login', username: u, password: p });
+      
       if (res.status === 'success') {
-        currentUser = res; updateUI(); $('#loginModal').modal('hide'); Swal.fire('สำเร็จ', 'เข้าสู่ระบบแล้ว', 'success');
-      } else { Swal.fire('ข้อผิดพลาด', res.message, 'error'); }
+        currentUser = res; 
+        updateUI(); 
+        $('#loginModal').modal('hide'); 
+        Swal.fire({ icon: 'success', title: 'เข้าสู่ระบบสำเร็จ', showConfirmButton: false, timer: 1500 });
+      } else { 
+        Swal.fire('เกิดข้อผิดพลาด', res.message, 'error'); 
+      }
     }
 
+    // ฟังก์ชันโหลดข้อมูลลงตาราง
     async function loadData(sheetName) {
       currentTab = sheetName;
-      Swal.showLoading();
+      Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+      
       let res = await callAPI({ action: 'getData', sheetName: sheetName });
-      if (res.status === 'error') { Swal.fire('Error', res.message, 'error'); return; }
+      
+      if (res.status === 'error') { 
+        Swal.fire('Error', res.message, 'error'); 
+        return; 
+      }
+      
       if (sheetName === 'data1') renderTable1(res.data);
       if (sheetName === 'data2') renderTable2(res.data);
+      
       Swal.close();
     }
 
+    // ฟังก์ชันลบข้อมูล
     async function deleteRecord(rowIndex) {
-      Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'ลบ' }).then(async (result) => {
+      Swal.fire({ 
+        title: 'ยืนยันการลบ?', 
+        text: "คุณจะไม่สามารถกู้คืนข้อมูลนี้ได้!",
+        icon: 'warning', 
+        showCancelButton: true, 
+        confirmButtonColor: '#d33', 
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'ใช่, ลบเลย!',
+        cancelButtonText: 'ยกเลิก'
+      }).then(async (result) => {
         if (result.isConfirmed) {
           Swal.showLoading();
           let res = await callAPI({ action: 'delete', sheetName: currentTab, rowIndex: rowIndex });
-          if(res.status === 'success') { loadData(currentTab); } else { Swal.fire('Error', res.message, 'error'); }
+          if(res.status === 'success') { 
+            loadData(currentTab); 
+            Swal.fire({ icon: 'success', title: 'ลบข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+          } else { 
+            Swal.fire('Error', res.message, 'error'); 
+          }
         }
       });
     }
     window.callDelete = function(idx) { deleteRecord(idx); }
 
-    async function submitData1() {
-      if(!$('#d1_date').val() || !$('#d1_title').val() || !$('#d1_file')[0].files[0]) return Swal.fire('เตือน', 'กรอกข้อมูลให้ครบ', 'warning');
-      Swal.fire({ title: 'กำลังอัปโหลด...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
-      let file = $('#d1_file')[0].files[0];
-      let base64 = await getBase64(file);
-      let payload = { date: $('#d1_date').val(), title: $('#d1_title').val(), file1: base64, file1Name: file.name, uploader: currentUser.name };
-      let res = await callAPI({ action: 'saveData1', payload: payload });
-      if(res.status === 'success') { $('#modalData1').modal('hide'); loadData('data1'); Swal.fire('สำเร็จ', 'บันทึกแล้ว', 'success'); }
-      else { Swal.fire('Error', res.message, 'error'); }
+    // ตรวจสอบขนาดไฟล์
+    function checkFileSize(fileInput) {
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        if (fileInput.files[0].size > MAX_FILE_SIZE) {
+          return false;
+        }
+      }
+      return true;
     }
 
+    // ฟังก์ชันบันทึกข้อมูลเฉพาะเจาะจง
+    async function submitData1() {
+      let dateVal = $('#d1_date').val();
+      let titleVal = $('#d1_title').val();
+      let fileInput = $('#d1_file')[0];
+      
+      if(!dateVal || !titleVal || !fileInput.files[0]) {
+        return Swal.fire('แจ้งเตือน', 'กรุณากรอกข้อมูลและแนบไฟล์ให้ครบถ้วน', 'warning');
+      }
+      
+      if(!checkFileSize(fileInput)) {
+        return Swal.fire('ขนาดไฟล์ใหญ่เกินไป', 'กรุณาแนบไฟล์ที่มีขนาดไม่เกิน 5MB', 'error');
+      }
+
+      Swal.fire({ title: 'กำลังอัปโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
+      
+      let file = fileInput.files[0];
+      let base64 = await getBase64(file);
+      let payload = { 
+        date: dateVal, 
+        title: titleVal, 
+        file1: base64, 
+        file1Name: file.name, 
+        uploader: currentUser.name 
+      };
+      
+      let res = await callAPI({ action: 'saveData1', payload: payload });
+      
+      if(res.status === 'success') { 
+        $('#modalData1').modal('hide'); 
+        loadData('data1'); 
+        Swal.fire({ icon: 'success', title: 'บันทึกข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+      } else { 
+        Swal.fire('Error', res.message, 'error'); 
+      }
+    }
+
+    // ฟังก์ชันบันทึกข้อมูล E-bidding
     async function submitData2() {
-      if(!$('#d2_date').val() || !$('#d2_title').val()) return Swal.fire('เตือน', 'กรอกวันที่และเรื่อง', 'warning');
-      Swal.fire({ title: 'กำลังอัปโหลด...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); }});
-      let getF = async (id) => { let f = $(id)[0].files[0]; return f ? { base64: await getBase64(f), name: f.name } : { base64: null, name: null }; };
+      if(!$('#d2_date').val() || !$('#d2_title').val()) {
+        return Swal.fire('แจ้งเตือน', 'กรุณากรอกวันที่และเรื่อง', 'warning');
+      }
+      
+      // ตรวจสอบขนาดไฟล์ทุกช่อง
+      const fileInputs = ['#d2_f1', '#d2_f2', '#d2_f3', '#d2_f4', '#d2_f5'];
+      for (let selector of fileInputs) {
+        if(!checkFileSize($(selector)[0])) {
+          return Swal.fire('ขนาดไฟล์ใหญ่เกินไป', 'มีไฟล์ที่ขนาดเกิน 5MB กรุณาตรวจสอบอีกครั้ง', 'error');
+        }
+      }
+
+      Swal.fire({ title: 'กำลังอัปโหลดข้อมูล...', allowOutsideClick: false, text: 'ขั้นตอนนี้อาจใช้เวลาสักครู่', didOpen: () => { Swal.showLoading(); }});
+      
+      let getF = async (id) => { 
+        let f = $(id)[0].files[0]; 
+        return f ? { base64: await getBase64(f), name: f.name } : { base64: null, name: null }; 
+      };
+      
       let payload = {
-        date: $('#d2_date').val(), title: $('#d2_title').val(),
+        date: $('#d2_date').val(), 
+        title: $('#d2_title').val(),
         fileC: (await getF('#d2_f1')).base64, fileCName: (await getF('#d2_f1')).name,
         fileD: (await getF('#d2_f2')).base64, fileDName: (await getF('#d2_f2')).name,
         fileE: (await getF('#d2_f3')).base64, fileEName: (await getF('#d2_f3')).name,
@@ -216,16 +478,24 @@
         fileG: (await getF('#d2_f5')).base64, fileGName: (await getF('#d2_f5')).name,
         uploader: currentUser.name
       };
+      
       let res = await callAPI({ action: 'saveData2', payload: payload });
-      if(res.status === 'success') { $('#modalData2').modal('hide'); loadData('data2'); Swal.fire('สำเร็จ', 'บันทึกแล้ว', 'success'); }
-      else { Swal.fire('Error', res.message, 'error'); }
+      
+      if(res.status === 'success') { 
+        $('#modalData2').modal('hide'); 
+        loadData('data2'); 
+        Swal.fire({ icon: 'success', title: 'บันทึกข้อมูลสำเร็จ', showConfirmButton: false, timer: 1500 });
+      } else { 
+        Swal.fire('Error', res.message, 'error'); 
+      }
     }
 
+    // อัปเดตการแสดงผลเมื่อ Login / Logout
     function updateUI() {
       if (currentUser) {
         $('#btnShowLoginModal').addClass('hidden');
         $('#btnLogout, .auth-action').removeClass('hidden');
-        $('#userInfo').removeClass('hidden').text(`${currentUser.name} (${currentUser.role})`);
+        $('#userInfo').removeClass('hidden').html(`<i class="fas fa-user-circle me-1"></i> ${currentUser.name} (${currentUser.role})`);
       } else {
         $('#btnShowLoginModal').removeClass('hidden');
         $('#btnLogout, .auth-action, #userInfo').addClass('hidden');
@@ -233,31 +503,89 @@
       loadData(currentTab);
     }
 
-    function genLink(url) { return (!url || url.trim() === '') ? '-' : `<a href="${url}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fas fa-download"></i></a>`; }
-    function getBase64(file) { return new Promise((resolve, reject) => { if(!file) return resolve(null); const r = new FileReader(); r.readAsDataURL(file); r.onload = () => resolve(r.result); r.onerror = e => reject(e); }); }
-
-    function renderTable1(data) {
-      if (dt1) dt1.destroy(); $('#table1 tbody').empty();
-      if(data && data.length > 0) {
-        data.forEach((row, index) => {
-          let btnHtml = '-'; let uploader = row[4] || '';
-          if (currentUser && (currentUser.role === 'Admin' || currentUser.name === uploader)) btnHtml = `<button class="btn btn-danger btn-sm" onclick="callDelete('${index + 1}')"><i class="fas fa-trash"></i></button>`;
-          $('#table1 tbody').append(`<tr><td>${row[0]||''}</td><td>${row[1]||''}</td><td>${row[2]||''}</td><td>${genLink(row[3])}</td><td>${uploader}</td><td>${btnHtml}</td></tr>`);
-        });
-      }
-      dt1 = $('#table1').DataTable({ language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, order: [[0, 'desc']] });
+    // เครื่องมือสร้างปุ่ม Download
+    function genLink(url) { 
+      return (!url || url.trim() === '') ? '<span class="text-muted">-</span>' : `<a href="${url}" target="_blank" class="btn btn-outline-primary btn-sm rounded-circle shadow-sm" title="เปิดเอกสาร"><i class="fas fa-file-download"></i></a>`; 
+    }
+    
+    // เครื่องมือแปลงไฟล์เป็น Base64
+    function getBase64(file) { 
+      return new Promise((resolve, reject) => { 
+        if(!file) return resolve(null); 
+        const r = new FileReader(); 
+        r.readAsDataURL(file); 
+        r.onload = () => resolve(r.result); 
+        r.onerror = e => reject(e); 
+      }); 
     }
 
-    function renderTable2(data) {
-      if (dt2) dt2.destroy(); $('#table2 tbody').empty();
+    // เรนเดอร์ตารางที่ 1
+    function renderTable1(data) {
+      if (dt1) dt1.destroy(); 
+      $('#table1 tbody').empty();
+      
       if(data && data.length > 0) {
         data.forEach((row, index) => {
-          let btnHtml = '-'; let uploader = row[7] || '';
-          if (currentUser && (currentUser.role === 'Admin' || currentUser.name === uploader)) btnHtml = `<button class="btn btn-danger btn-sm" onclick="callDelete('${index + 1}')"><i class="fas fa-trash"></i></button>`;
-          $('#table2 tbody').append(`<tr><td>${row[0]||''}</td><td>${row[1]||''}</td><td>${genLink(row[2])}</td><td>${genLink(row[3])}</td><td>${genLink(row[4])}</td><td>${genLink(row[5])}</td><td>${genLink(row[6])}</td><td>${uploader}</td><td>${btnHtml}</td></tr>`);
+          let btnHtml = '-'; 
+          let uploader = row[4] || '';
+          if (currentUser && (currentUser.role === 'Admin' || currentUser.name === uploader)) {
+             btnHtml = `<button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" title="ลบข้อมูล" onclick="callDelete('${index + 1}')"><i class="fas fa-trash-alt"></i></button>`;
+          }
+          $('#table1 tbody').append(`
+            <tr>
+              <td>${row[0]||''}</td>
+              <td>${row[1]||''}</td>
+              <td class="text-start">${row[2]||''}</td>
+              <td>${genLink(row[3])}</td>
+              <td><small class="text-muted">${uploader}</small></td>
+              <td>${btnHtml}</td>
+            </tr>
+          `);
         });
       }
-      dt2 = $('#table2').DataTable({ language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, order: [[0, 'desc']] });
+      
+      dt1 = $('#table1').DataTable({ 
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, 
+        order: [[0, 'desc']],
+        pageLength: 10,
+        responsive: true
+      });
+    }
+
+    // เรนเดอร์ตารางที่ 2
+    function renderTable2(data) {
+      if (dt2) dt2.destroy(); 
+      $('#table2 tbody').empty();
+      
+      if(data && data.length > 0) {
+        data.forEach((row, index) => {
+          let btnHtml = '-'; 
+          let uploader = row[7] || '';
+          if (currentUser && (currentUser.role === 'Admin' || currentUser.name === uploader)) {
+             btnHtml = `<button class="btn btn-outline-danger btn-sm rounded-circle shadow-sm" title="ลบข้อมูล" onclick="callDelete('${index + 1}')"><i class="fas fa-trash-alt"></i></button>`;
+          }
+          $('#table2 tbody').append(`
+            <tr>
+              <td>${row[0]||''}</td>
+              <td class="text-start">${row[1]||''}</td>
+              <td>${genLink(row[2])}</td>
+              <td>${genLink(row[3])}</td>
+              <td>${genLink(row[4])}</td>
+              <td>${genLink(row[5])}</td>
+              <td>${genLink(row[6])}</td>
+              <td><small class="text-muted">${uploader}</small></td>
+              <td>${btnHtml}</td>
+            </tr>
+          `);
+        });
+      }
+      
+      dt2 = $('#table2').DataTable({ 
+        language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, 
+        order: [[0, 'desc']],
+        pageLength: 10,
+        responsive: true
+      });
     }
   </script>
 </body>
