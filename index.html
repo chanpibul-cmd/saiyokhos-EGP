@@ -552,7 +552,7 @@
       });
     }
 
-    // เรนเดอร์ตารางที่ 2
+    // เรนเดอร์ตารางที่ 2 (E-bidding)
     function renderTable2(data) {
       if (dt2) dt2.destroy(); 
       $('#table2 tbody').empty();
@@ -566,7 +566,8 @@
           }
           $('#table2 tbody').append(`
             <tr>
-              <td>${row[0]||''}</td>
+              <!-- เพิ่ม data-order="\${index}" เพื่อบังคับให้เรียงตามลำดับข้อมูลที่เพิ่มเข้ามา (ข้อมูลล่าสุด index จะมากสุด) -->
+              <td data-order="${index}">${row[0]||''}</td>
               <td class="text-start">${row[1]||''}</td>
               <td>${genLink(row[2])}</td>
               <td>${genLink(row[3])}</td>
@@ -582,7 +583,7 @@
       
       dt2 = $('#table2').DataTable({ 
         language: { url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/th.json' }, 
-        order: [[0, 'desc']],
+        order: [[0, 'desc']], // สั่งให้เรียงคอลัมน์ที่ 0 จากมากไปน้อย (ดึงข้อมูลล่าสุดขึ้นบน)
         pageLength: 10,
         responsive: true
       });
